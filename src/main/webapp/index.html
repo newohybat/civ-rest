@@ -1,0 +1,45 @@
+<html>
+<head>
+<script src="jquery-2.1.0.min.js"></script>
+<script type='text/javascript'>
+	$.extend({
+    postJSON: function(url, data, callback) {
+      return jQuery.ajax({
+        type: "POST",
+        url: url,
+        data: JSON.stringify(data),
+        success: callback,
+        dataType: "json",
+        contentType: "application/json",
+        processData: false
+      });
+    }
+  });
+  $(document).ready(function(){
+		$("a").click(function(event){
+		event.preventDefault();
+		parseInput($("#data").val());
+	  });
+  });
+  function parseInput(input){
+	var json = $.parseJSON(input);
+	$.each(json,function(key,data){
+		processInput(key,data);
+	});
+	}
+	function processInput(type,json){
+		$.postJSON("http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/"+type+"/insert/all",json,function(){alert("jest");})
+	}
+  
+  
+  </script>
+  </head>
+  <body>
+	<div>
+		<a href="#" id="click">click</a>
+	</div>
+	<div>
+		<textarea id="data"></textarea>
+	</div>
+  </body>
+ </html>
