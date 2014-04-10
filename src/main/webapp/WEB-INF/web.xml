@@ -4,4 +4,7 @@
  
 <web-app>
   <display-name>Restful Web Application</display-name>
+  <welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		</welcome-file-list>
 </web-app>
