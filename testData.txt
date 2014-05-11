@@ -1,0 +1,202 @@
+{
+	"action":[{"ident":"move","name":"Move","description":"Give command to move."}]
+	,"government":[{"ident":"democracy","name":"Democracy","description":"It is great"},{"ident":"communism","name":"Communism","description":"It is not so great"},{"ident":"theocracy","name":"Theocracy","description":"It is lame"},{"ident":"monarchy","name":"Monarchy","description":"It is posh"}]
+	,"terrain":[{"ident":"plains","name":"Plains"},{"ident":"hills","name":"Plains"}]
+	, "special":[{"ident":"horses","name":"Horses"}]
+	, "unittype":[{"ident":"phalanx","name":"Phalanx","actions":["move"]}]
+	, "player":[{"name":"ich","advances":[]}]
+	, "tile":[{"posX":1,"posY":1, "terrain":"hills","foodProduction":0,"resourcesProduction":0,"tradeProduction":0},{"posX":1,"posY":2, "terrain":"plains", "special":"horses", "defenseBonus":0}]
+	, "unit":[{"tile":6, "type":"phalanx","actions":[],"owner":8},{"tile":7, "type":"phalanx","actions":[],"owner":8}]
+}
+{
+	"action":[
+		{"ident":"move","name":"Move","description":"Give command to move."}
+		,{"ident":"buildIrrigation", "name":"Build Irrigation", "description":"Start irrigating the tile."}
+		,{"ident":"setHomeCity", "name":"Set Home City", "description":"Set the current city as home of unit."}
+		,{"ident":"buildCity", "name":"Build City", "description":"Build a city on current tile."}
+	]
+}
+{
+	"cityimprovement":[
+		{"ident":"bank","name":"Bank","description":"Increases luxuries and taxes by a half.","obsoletedByAdvance":null,"obsoletedByImprovement":null,"constructionCost":10,"upkeepCost":1}
+		,{"ident":"granary","name":"Granary","description":"Provides food storage.","obsoletedByAdvance":null,"obsoletedByImprovement":null,"constructionCost":5,"upkeepCost":1}
+	]
+}
+{
+	"unittype":[
+		{"ident":"phalanx","name":"Phalanx","actions":["move","setHomeCity"],"military":"true","cost":10}
+		,{"ident":"settler","name":"Settler","actions":["move","setHomeCity","buildIrrigation","buildCity"],"cost":6}
+		,{"ident":"cavalry","name":"Cavalry","actions":["move","setHomeCity"],"military":"true","cost":12}
+	]
+}
+{
+	"government":[
+		{"ident":"despotism","name":"Despotism","description":"Basic government"}
+		,{"ident":"theRepublic","name":"The Republic","description":"It is great"}
+		,{"ident":"communism","name":"Communism","description":"It is not so great"}
+		,{"ident":"monarchy","name":"Monarchy","description":"It is posh"}]
+}
+{
+	"special":[
+		{"ident":"seals","name":"Seals"}
+		,{"ident":"oasis","name":"Oasis"}
+		,{"ident":"game","name":"Game"}
+		,{"ident":"coal","name":"Coal"}
+		,{"ident":"gems","name":"Gems"}
+		,{"ident":"gold","name":"Gold"}
+		,{"ident":"horses","name":"Horses"}
+		,{"ident":"fish","name":"Fish"}
+		,{"ident":"oil","name":"Oil"}
+	]
+}
+{
+	"terrain":[
+		{"ident":"plains","name":"Plains"}
+		,{"ident":"hills","name":"Hills"}
+		,{"ident":"arctic","name":"Arctic"}
+		,{"ident":"desert","name":"Desert"}
+		,{"ident":"forest","name":"Forest"}
+		,{"ident":"grassland","name":"Grassland"}
+		,{"ident":"jungle","name":"Jungle"}
+		,{"ident":"mountains","name":"Mountains"}
+		,{"ident":"ocean","name":"Ocean"}
+		,{"ident":"rivers","name":"Rivers"}
+		,{"ident":"swamp","name":"Swamp"}
+		,{"ident":"tundra","name":"Tundra"}
+	]
+}
+{
+	"tileimprovement":[
+		{"ident":"irrigation","name":"Irrigation","description":"Somewhere provides more food production","cost":1}
+	]
+}
+{
+	"advance":[
+		{"ident":"third","name":"Third","description":"Third advance to be enabled to research.","enabledAdvances":[],"enabledCityImprovements":["bank"],"enabledUnitTypes":[],"enabledGovernments":["theRepublic"]}
+		,{"ident":"first","name":"First","description":"First advance to be enabled to research.","enabledAdvances":["third"],"enabledCityImprovements":["granary"],"enabledUnitTypes":["cavalry"],"enabledGovernments":["monarchy"]}
+		,{"ident":"second","name":"Second","description":"Second advance to be enabled to research.","enabledAdvances":[],"enabledCityImprovements":[],"enabledUnitTypes":[],"enabledGovernments":["communism"]}
+		,{"ident":"basic","name":"Basic","description":"Initial advance which is reached by every player.","enabledAdvances":["first","second"],"enabledCityImprovements":[],"enabledUnitTypes":["phalanx","settler"],"enabledGovernments":["despotism"]}
+	]
+}
+{
+	"player":[
+		{"name":"Player One","advances":["basic"],"government":"despotism","luxuriesRatio":30,"taxesRatio":30,"researchRatio":40}
+		,{"name":"Player Two","advances":["basic"],"government":"despotism","luxuriesRatio":40,"taxesRatio":20,"researchRatio":40}
+	]
+}
+{
+	"tile":[
+		{"posX":1,"posY":1,"terrain":"grassland","special":null}
+		,{"posX":1,"posY":2,"terrain":"rivers","special":null}
+		,{"posX":1,"posY":3,"terrain":"jungle","special":null}
+		,{"posX":1,"posY":4,"terrain":"forest","special":null}
+		,{"posX":1,"posY":5,"terrain":"desert","special":null}
+		,{"posX":1,"posY":6,"terrain":"ocean","special":null}
+		,{"posX":1,"posY":7,"terrain":"rivers","special":null}
+		,{"posX":1,"posY":8,"terrain":"hills","special":null}
+		,{"posX":1,"posY":9,"terrain":"plains","special":null}
+		,{"posX":1,"posY":10,"terrain":"arctic","special":null}
+		,{"posX":2,"posY":1,"terrain":"mountains","special":null}
+		,{"posX":2,"posY":2,"terrain":"rivers","special":null}
+		,{"posX":2,"posY":3,"terrain":"plains","special":null}
+		,{"posX":2,"posY":4,"terrain":"forest","special":null}
+		,{"posX":2,"posY":5,"terrain":"plains","special":null}
+		,{"posX":2,"posY":6,"terrain":"jungle","special":null}
+		,{"posX":2,"posY":7,"terrain":"swamp","special":null}
+		,{"posX":2,"posY":8,"terrain":"plains","special":null}
+		,{"posX":2,"posY":9,"terrain":"forest","special":null}
+		,{"posX":2,"posY":10,"terrain":"tundra","special":null}
+		,{"posX":3,"posY":1,"terrain":"jungle","special":null}
+		,{"posX":3,"posY":2,"terrain":"jungle","special":null}
+		,{"posX":3,"posY":3,"terrain":"ocean","special":null}
+		,{"posX":3,"posY":4,"terrain":"plains","special":null}
+		,{"posX":3,"posY":5,"terrain":"jungle","special":null}
+		,{"posX":3,"posY":6,"terrain":"mountains","special":null}
+		,{"posX":3,"posY":7,"terrain":"mountains","special":null}
+		,{"posX":3,"posY":8,"terrain":"ocean","special":null}
+		,{"posX":3,"posY":9,"terrain":"grassland","special":null}
+		,{"posX":3,"posY":10,"terrain":"arctic","special":null}
+		,{"posX":4,"posY":1,"terrain":"plains","special":null}
+		,{"posX":4,"posY":2,"terrain":"plains","special":null}
+		,{"posX":4,"posY":3,"terrain":"jungle","special":null}
+		,{"posX":4,"posY":4,"terrain":"forest","special":null}
+		,{"posX":4,"posY":5,"terrain":"desert","special":null}
+		,{"posX":4,"posY":6,"terrain":"grassland","special":null}
+		,{"posX":4,"posY":7,"terrain":"forest","special":null}
+		,{"posX":4,"posY":8,"terrain":"jungle","special":null}
+		,{"posX":4,"posY":9,"terrain":"swamp","special":null}
+		,{"posX":4,"posY":10,"terrain":"tundra","special":null}
+		,{"posX":5,"posY":1,"terrain":"forest","special":null}
+		,{"posX":5,"posY":2,"terrain":"rivers","special":null}
+		,{"posX":5,"posY":3,"terrain":"grassland","special":null}
+		,{"posX":5,"posY":4,"terrain":"ocean","special":null}
+		,{"posX":5,"posY":5,"terrain":"plains","special":null}
+		,{"posX":5,"posY":6,"terrain":"rivers","special":null}
+		,{"posX":5,"posY":7,"terrain":"hills","special":null}
+		,{"posX":5,"posY":8,"terrain":"plains","special":null}
+		,{"posX":5,"posY":9,"terrain":"ocean","special":null}
+		,{"posX":5,"posY":10,"terrain":"tundra","special":null}
+		,{"posX":6,"posY":1,"terrain":"plains","special":null}
+		,{"posX":6,"posY":2,"terrain":"plains","special":null}
+		,{"posX":6,"posY":3,"terrain":"plains","special":null}
+		,{"posX":6,"posY":4,"terrain":"rivers","special":null}
+		,{"posX":6,"posY":5,"terrain":"jungle","special":null}
+		,{"posX":6,"posY":6,"terrain":"ocean","special":null}
+		,{"posX":6,"posY":7,"terrain":"jungle","special":null}
+		,{"posX":6,"posY":8,"terrain":"swamp","special":null}
+		,{"posX":6,"posY":9,"terrain":"mountains","special":null}
+		,{"posX":6,"posY":10,"terrain":"tundra","special":null}
+		,{"posX":7,"posY":1,"terrain":"rivers","special":null}
+		,{"posX":7,"posY":2,"terrain":"mountains","special":null}
+		,{"posX":7,"posY":3,"terrain":"hills","special":null}
+		,{"posX":7,"posY":4,"terrain":"forest","special":null}
+		,{"posX":7,"posY":5,"terrain":"jungle","special":null}
+		,{"posX":7,"posY":6,"terrain":"mountains","special":null}
+		,{"posX":7,"posY":7,"terrain":"jungle","special":null}
+		,{"posX":7,"posY":8,"terrain":"forest","special":null}
+		,{"posX":7,"posY":9,"terrain":"forest","special":null}
+		,{"posX":7,"posY":10,"terrain":"arctic","special":"seals"}
+		,{"posX":8,"posY":1,"terrain":"ocean","special":null}
+		,{"posX":8,"posY":2,"terrain":"grassland","special":null}
+		,{"posX":8,"posY":3,"terrain":"swamp","special":null}
+		,{"posX":8,"posY":4,"terrain":"grassland","special":null}
+		,{"posX":8,"posY":5,"terrain":"desert","special":null}
+		,{"posX":8,"posY":6,"terrain":"plains","special":null}
+		,{"posX":8,"posY":7,"terrain":"rivers","special":null}
+		,{"posX":8,"posY":8,"terrain":"mountains","special":null}
+		,{"posX":8,"posY":9,"terrain":"plains","special":"horses"}
+		,{"posX":8,"posY":10,"terrain":"arctic","special":null}
+		,{"posX":9,"posY":1,"terrain":"swamp","special":null}
+		,{"posX":9,"posY":2,"terrain":"hills","special":null}
+		,{"posX":9,"posY":3,"terrain":"forest","special":null}
+		,{"posX":9,"posY":4,"terrain":"plains","special":null}
+		,{"posX":9,"posY":5,"terrain":"jungle","special":null}
+		,{"posX":9,"posY":6,"terrain":"grassland","special":null}
+		,{"posX":9,"posY":7,"terrain":"swamp","special":null}
+		,{"posX":9,"posY":8,"terrain":"forest","special":"game"}
+		,{"posX":9,"posY":9,"terrain":"forest","special":null}
+		,{"posX":9,"posY":10,"terrain":"tundra","special":null}
+		,{"posX":10,"posY":1,"terrain":"hills","special":null}
+		,{"posX":10,"posY":2,"terrain":"mountains","special":null}
+		,{"posX":10,"posY":3,"terrain":"plains","special":null}
+		,{"posX":10,"posY":4,"terrain":"rivers","special":null}
+		,{"posX":10,"posY":5,"terrain":"plains","special":null}
+		,{"posX":10,"posY":6,"terrain":"rivers","special":null}
+		,{"posX":10,"posY":7,"terrain":"forest","special":"game"}
+		,{"posX":10,"posY":8,"terrain":"jungle","special":null}
+		,{"posX":10,"posY":9,"terrain":"jungle","special":null}
+		,{"posX":10,"posY":10,"terrain":"tundra","special":null}
+	]
+}
+{
+	"unit":[
+		{"tile":SET_TILE_ID, "type":"phalanx","owner":SET_PLAYER_ID}
+		,{"tile":SET_TILE_ID, "type":"settler","owner":SET_PLAYER_ID}
+		,{"tile":SET_TILE_ID, "type":"cavalry","owner":SET_PLAYER_ID}
+	]
+}
+{
+	"city":[
+		{"name":"Brno","cityCentre":SET_TILE_ID, "owner":SET_PLAYER_ID, "homeUnits":[SET_UNIT_IDS], "managedTiles":[SET_TILE_IDS], "size":1,"peopleContent":1 }
+	]
+}

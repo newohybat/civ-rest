@@ -1,6 +1,7 @@
 <html>
 <head>
 <script src="jquery-2.1.0.min.js"></script>
+<script src="jquery-ui-1.10.4.custom.min.js"></script>
 <script type='text/javascript'>
 	$.extend({
     postJSON: function(url, data, callback) {
@@ -10,36 +11,338 @@
         data: JSON.stringify(data),
         success: callback,
         dataType: "json",
-        contentType: "application/json",
-        processData: false
+        contentType: "application/json"
       });
     }
   });
   $(document).ready(function(){
-		$("a").click(function(event){
-		event.preventDefault();
-		parseInput($("#data").val());
-	  });
+	  $("a#ksession").click(function(event){
+			event.preventDefault();
+			parseInput($("#ksession-data").val(),processKsession);
+		  });
+	  $("a#db").click(function(event){
+			event.preventDefault();
+			parseInput($("#db-data").val(),processDb);
+		  });
   });
-  function parseInput(input){
+  (function($) {
+	    $.fn.invisible = function() {
+	        return this.each(function() {
+	            $(this).css("visibility", "hidden");
+	        });
+	    };
+	    $.fn.visible = function() {
+	        return this.each(function() {
+	            $(this).css("visibility", "visible");
+	        });
+	    };
+	}(jQuery));
+  var jsons = {};
+  function parseInput(input,callback){
 	var json = $.parseJSON(input);
 	$.each(json,function(key,data){
-		processInput(key,data);
+		callback(key,data);
 	});
 	}
-	function processInput(type,json){
-		$.postJSON("http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/"+type+"/insert/all",json,function(){alert("jest");})
+  function processKsession(type,json){
+		$.postJSON("http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/ksession/"+type+"/insert/all",json,function(){alert("jest");})
 	}
-  
+  function processDb(type,json){
+		$.postJSON("http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/db/"+type+"/create/all",json,function(data){promoteToKsessionWindow(type,data);})
+	}
+  	function promoteToKsessionWindow(type,json){
+		$("#ksession-data").val("{\""+ type +"\":"+JSON.stringify(json)+"}");
+		$("a#ksession").click();
+		
+	}
+  	$(function() {
+  	    $( "#accordion" ).accordion();
+  	    $( "#smaller-accordion").accordion({ heightStyle: "content",collapsible: true });
+  	  });
+	$(function(){
+		$("a.refresh").click(function(event){
+			event.preventDefault();
+			var operation = $(this).closest("div").attr("id");
+			load(operation);
+		});
+	});
+	function load(type){
+		$("#"+type+">div.data").empty();
+		jsons[type] = {};
+		$.getJSON( "http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/db/"+type+"/all", eval(type));
+	}
+	function base(type,data){
+		$.each(data,function(key,json){
+			var identification = (json.ident!=undefined)?json.ident:json.id;
+			$("#"+type+">div.data").append("<div class=\"entry\"><a href=\"javascript:detail('"+type+"','"+identification+"');\">"+type+":"+identification+"</a></div>");
+			jsons[type][identification] = json;
+		});
+	}
+	function detail(type,identification){
+		var detailText = "<div>";
+		var json = jsons[type][identification];
+		$.each(json,function(key,value){
+			detailText = detailText + "<div>"+key+":"+JSON.stringify(value)+"</div>";
+		});
+		detailText = detailText + "</div>";
+		$("#detail").html(detailText);
+		var funcName = type+"Detail";
+		if (eval("typeof " + funcName) === "function") { 
+		    eval(funcName)(identification);
+		}
+		$("#detail").visible();
+	}
+	function unitDetail(identification){
+		$("#detail").append("<label>action</label><input type=\"text\" id=\"action\"/><a href=\"javascript:unitAction('"+identification+"');\">start Action</a><br />");
+		$("#detail").append("<label>arguments</label><input type=\"text\" id=\"arguments\"/><br />");
+		$("#detail").append("<a href=\"javascript:unitCancelAction('"+identification+"');\">cancel Action</a><br />");
+	}
+	function unitAction(identification){
+		var url = "http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/ksession/unit/"+identification+"/begin/"+$('input#action').val();
+		if($('input#arguments').val()!=""){
+			url += "/"+$('input#arguments').val();
+		}
+		$.postJSON(url);
+	}
+	function unitCancelAction(identification){
+		var url = "http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/ksession/unit/"+identification+"/cancel/action";
+		$.postJSON(url);
+	}
+	function cityDetail(identification){
+		$("#detail").append("<a href=\"javascript:createUnit('"+identification+"');\">recruit unit</a><br />");
+		$("#detail").append("<a href=\"javascript:cityCancelUnit('"+identification+"');\">cancel recruit</a><br />");
+		$("#detail").append("<a href=\"javascript:buildImprovement('"+identification+"');\">build city improvement</a><br />");
+		$("#detail").append("<a href=\"javascript:cityCancelImprovement('"+identification+"');\">cancel build</a><br />");
+		$("#detail").append("<label>arguments</label><input type=\"text\" id=\"arguments\"/>");
+	}
+	function cityCancelUnit(identification){
+		var url = "http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/ksession/city/"+identification+"/cancel/unit";
+		$.postJSON(url);
+	}
+	function cityCancelImprovement(identification){
+		var url = "http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/ksession/city/"+identification+"/cancel/cityimprovement";
+		$.postJSON(url);
+	}
+	function createUnit(identification){
+		if($('input#arguments').val()!=""){
+			var url = "http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/ksession/city/"+identification+"/recruit";
+			url += "/"+$('input#arguments').val();
+			$.postJSON(url);
+		}
+	}
+	function buildImprovement(identification){
+		if($('input#arguments').val()!=""){
+			var url = "http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/ksession/city/"+identification+"/build";
+			url += "/"+$('input#arguments').val();
+			$.postJSON(url);
+		}
+	}
+	function playerDetail(identification){
+		$("#detail").append("<a href=\"javascript:beginAdvance('"+identification+"');\">research advance</a><br />");
+		$("#detail").append("<a href=\"javascript:cancelAdvance('"+identification+"');\">cancel advance</a><br />");
+		$("#detail").append("<a href=\"javascript:changeGovernment('"+identification+"');\">change government</a><br />");
+		$("#detail").append("<label>arguments</label><input type=\"text\" id=\"arguments\"/><br />");
+	}
+	function beginAdvance(identification){
+		if($('input#arguments').val()!=""){
+			var url = "http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/ksession/player/"+identification+"/research";
+			url += "/"+$('input#arguments').val();
+			$.postJSON(url);
+		}
+	}
+	function cancelAdvance(identification){
+		var url = "http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/ksession/player/"+identification+"/cancel/research";
+		$.postJSON(url);
+	}
+	function changeGovernment(identification){
+		if($('input#arguments').val()!=""){
+			var url = "http://localhost:8080/civ-rest-1.0-SNAPSHOT/rest/ksession/player/"+identification+"/government";
+			url += "/"+$('input#arguments').val();
+			$.postJSON(url);
+		}
+	}
+	$(function(){
+		$('html').click(function() {
+			$("#detail").invisible();
+		});
+	});
+	$(function(){
+		$('#detail').click(function(event){
+		    event.stopPropagation();
+		});
+	});
+	function advance(data){
+		base("advance",data);
+	}
+	function cityimprovement(data){
+		base("cityimprovement",data);
+	}
+	function city(data){
+		base("city",data);
+	}
+	function government(data){
+		base("government",data);
+	}
+	function player(data){
+		base("player",data);
+	}
+	function special(data){
+		base("special",data);
+	}
+	function terrain(data){
+		base("terrain",data);
+	}
+	function tile(data){
+		base("tile",data);
+	}
+	function tileimprovement(data){
+		base("tileimprovement",data);
+	}
+	function unit(data){
+		base("unit",data);
+	}
+	function unittype(data){
+		base("unittype",data);
+	}
+	
   
   </script>
+  <link rel="stylesheet" href="jquery-ui-1.10.4.custom.min.css" type="text/css" />
+  <style type="text/css">
+  	div.container{
+  		width:100%;
+  	}
+  	textarea{
+  		width:100%;
+  		border:1px solid black;
+  		min-height:300px;
+  	}
+  	#smaller-accordion{
+  		width:180px;
+  		font-size:13px;
+  	}
+  	#detail{
+  		width:500px;
+  		min-height:300px;
+  		position:fixed;
+  		left:50%;
+  		top:0px;
+  		margin-left:-250px;
+  		background:white;
+  		border:1px solid black;
+  		visibility:hidden;
+  		z-index:5;
+  	}
+  </style>
   </head>
   <body>
-	<div>
-		<a href="#" id="click">click</a>
+  	<div id="accordion">
+  		<h3>Init Game World</h3>
+  		<div>
+			<div class="container">
+				<a href="#" id="db">save to db</a>
+			</div>
+			<div class="container">
+				<textarea id="db-data"></textarea>
+			</div>
+			
+			<div class="container">
+				<a href="#" id="ksession">insert to ksession</a>
+			</div>
+			<div class="container">
+				<textarea id="ksession-data"></textarea>
+			</div>
+		</div>
+		<h3>Perform Actions</h3>
+		<div><div id="smaller-accordion">
+			<h3>Actions</h3>
+			<div id="action">
+				<a href="#" class="refresh">load actions</a>
+				<div class="data">
+					no data
+				</div>
+			</div>
+			<h3>Advances</h3>
+			<div id="advance">
+				<a href="#" class="refresh">load advances</a>
+				<div class="data">
+					no data
+				</div>
+			</div>
+			<h3>City Improvements</h3>
+			<div id="cityimprovement">
+				<a href="#" class="refresh">load city improvements</a>
+				<div class="data">
+					no data
+				</div>
+			</div>
+			<h3>Cities</h3>
+			<div id="city">
+				<a href="#" class="refresh">load cities</a>
+				<div class="data">
+					no data
+				</div>
+			</div>
+			<h3>Governments</h3>
+			<div id="government">
+				<a href="#" class="refresh">load governments</a>
+				<div class="data">
+					no data
+				</div>
+			</div>
+			<h3>Players</h3>
+			<div id="player">
+				<a href="#" class="refresh">load players</a>
+				<div class="data">
+					no data
+				</div>
+			</div>
+			<h3>Specials</h3>
+			<div id="special">
+				<a href="#" class="refresh">load specials</a>
+				<div class="data">
+					no data
+				</div>
+			</div>
+			<h3>Terrains</h3>
+			<div id="terrain">
+				<a href="#" class="refresh">load terrains</a>
+				<div class="data">
+					no data
+				</div>
+			</div>
+			<h3>Tiles</h3>
+			<div id="tile">
+				<a href="#" class="refresh">load tiles</a>
+				<div class="data">
+					no data
+				</div>
+			</div>
+			<h3>Tile Improvements</h3>
+			<div id="tileimprovement">
+				<a href="#" class="refresh">load tile improvements</a>
+				<div class="data">
+					no data
+				</div>
+			</div>
+			<h3>Units</h3>
+			<div id="unit">
+				<a href="#" class="refresh">load units</a>
+				<div class="data">
+					no data
+				</div>
+			</div>
+			<h3>UnitTypes</h3>
+			<div id="unittype">
+				<a href="#" class="refresh">load unittypes</a>
+				<div class="data">
+					no data
+				</div>
+			</div>
+			
+		</div>
+		</div>
 	</div>
-	<div>
-		<textarea id="data"></textarea>
-	</div>
+	<div id="detail">hej </div>
   </body>
  </html>
