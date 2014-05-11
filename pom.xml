@@ -115,9 +115,4 @@
       </plugin>
     </plugins>
   </build>
-  <parent>
-  	<groupId>cz.muni.fi.civ</groupId>
-  	<artifactId>civ</artifactId>
-  	<version>0.0.1-SNAPSHOT</version>
-  </parent>
 </project>

@@ -7,6 +7,8 @@ import java.util.List;
 
 
 
+
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.HeuristicMixedException;
@@ -24,7 +26,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import cz.muni.fi.civ.newohybat.game.service.GameService;
 import cz.muni.fi.civ.newohybat.game.service.GameServiceImpl;
+import cz.muni.fi.civ.newohybat.persistence.facade.dto.ActionDTO;
 import cz.muni.fi.civ.newohybat.persistence.facade.dto.AdvanceDTO;
 import cz.muni.fi.civ.newohybat.persistence.facade.dto.CityDTO;
 import cz.muni.fi.civ.newohybat.persistence.facade.dto.CityImprovementDTO;
@@ -38,12 +42,12 @@ import cz.muni.fi.civ.newohybat.persistence.facade.dto.UnitDTO;
 import cz.muni.fi.civ.newohybat.persistence.facade.dto.UnitTypeDTO;
 import cz.muni.fi.civ.newohybat.persistence.facade.iface.CivBackend;
  
-@Path("/")
+@Path("/ksession")
 public class App {
 	@Inject
 	CivBackend cb;
 	@Inject
-	GameServiceImpl gs;
+	GameService gs;
 	@Inject
 	UserTransaction utx;
 	@GET
@@ -78,11 +82,37 @@ public class App {
 		return Response.status(200).build();
 	}
 	@GET
+	@Path("/init")
+	public Response init(){
+		gs.init();
+		return Response.status(200).build();
+	}
+	@GET
+	@Path("/load/{param}")
+	public Response load(@PathParam("param") Integer sessionId){
+		gs.load(sessionId);
+		return Response.status(200).build();
+	}
+	@POST
+	@Path("/action/insert/all")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response insertAllActions(Collection<ActionDTO> actions){
+		// no-op so far
+		return Response.status(200).build();
+	}
+	@GET
 	@Path("/advance/insert")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response insertCityImprovement(AdvanceDTO advance){
 		gs.insert(advance);
 		
+		return Response.status(200).build();
+	}
+	@POST
+	@Path("/advance/insert/all")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response insertAdvances(Collection<AdvanceDTO> advances){
+		gs.insertAll(advances);
 		return Response.status(200).build();
 	}
 	@GET
@@ -113,6 +143,13 @@ public class App {
 		return Response.status(200).build();
  
 	}
+	@POST
+	@Path("/city/insert/all")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response insertAllCities(Collection<CityDTO> cities){
+		gs.insertAll(cities);
+		return Response.status(200).build();
+	}
 	@GET
 	@Path("/city/all")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -133,6 +170,30 @@ public class App {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getCity(@PathParam("id") Long id) {
 		return Response.status(200).entity(gs.getCity(id)).build();
+	}
+	@POST
+	@Path("/city/{id}/recruit/{ident}")
+	public Response cityBeginUnit(@PathParam("id") Long id,@PathParam("ident") String ident){
+		gs.cityBeginUnit(id, ident);
+		return Response.status(200).build();
+	}
+	@POST
+	@Path("/city/{id}/cancel/unit")
+	public Response cancelUnit(@PathParam("id") Long id){
+		gs.cityStopUnit(id);
+		return Response.status(200).build();
+	}
+	@POST
+	@Path("/city/{id}/build/{ident}")
+	public Response cityBeginImprovement(@PathParam("id") Long id,@PathParam("ident") String ident){
+		gs.cityBeginCityImprovement(id, ident);
+		return Response.status(200).build();
+	}
+	@POST
+	@Path("/city/{id}/cancel/cityimprovement")
+	public Response cancelImp(@PathParam("id") Long id){
+		gs.cityStopCityImprovement(id);
+		return Response.status(200).build();
 	}
 	@GET
 	@Path("/cityimprovement/insert")
@@ -211,6 +272,13 @@ public class App {
 		return Response.status(200).build();
  
 	}
+	@POST
+	@Path("/player/insert/all")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response insertAllPlayers(Collection<PlayerDTO> players){
+		gs.insertAll(players);
+		return Response.status(200).build();
+	}
 	@GET
 	@Path("/player/all")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -232,6 +300,25 @@ public class App {
 	public Response getPlayer(@PathParam("id") Long id) {
 		return Response.status(200).entity(gs.getPlayer(id)).build();
 	}
+	@POST
+	@Path("/player/{id}/government/{ident}")
+	public Response changeGovernment(@PathParam("id") Long id,@PathParam("ident") String ident){
+		gs.playerChangeGovernment(id, ident);
+		return Response.status(200).build();
+	}
+	@POST
+	@Path("/player/{id}/research/{ident}")
+	public Response beginResearch(@PathParam("id") Long id,@PathParam("ident") String ident){
+		gs.playerBeginAdvance(id, ident);
+		return Response.status(200).build();
+	}
+	@POST
+	@Path("/player/{id}/cancel/research")
+	public Response cancelResearch(@PathParam("id") Long id){
+		gs.playerStopAdvance(id);
+		return Response.status(200).build();
+	}
+	
 	@GET
 	@Path("/special/insert")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -340,11 +427,18 @@ public class App {
 	public Response getTile(@PathParam("id") Long id) {
 		return Response.status(200).entity(gs.getTile(id)).build();
 	}
-	@GET
+	@POST
 	@Path("/tileimprovement/insert")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response insertTileImprovement(TileImprovementDTO tileImprovement){
 		gs.insert(tileImprovement);
+		return Response.status(200).build();
+	}
+	@POST
+	@Path("/tileimprovement/insert/all")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response insertTileImprovement(Collection<TileImprovementDTO> imps){
+		gs.insertAll(imps);
 		return Response.status(200).build();
 	}
 	@GET
@@ -407,8 +501,34 @@ public class App {
 	public Response getUnit(@PathParam("id") Long id) {
 		return Response.status(200).entity(gs.getUnit(id)).build();
 	}
-	
-	@GET
+	@POST
+	@Path("/unit/{id}/begin/{ident}")
+	public Response beginAction(@PathParam("id")Long id,@PathParam("ident") String ident) {
+		gs.unitBeginAction(id, ident);
+		return Response.status(200).build();
+	}
+	@POST
+	@Path("/unit/{id}/cancel/action")
+	public Response cancelAction(@PathParam("id") Long id){
+		gs.unitStopAction(id);
+		gs.unitStopMove(id);
+		return Response.status(200).build();
+	}
+	@POST
+	@Path("/unit/{id}/begin/{ident}/{targetTile}")
+	public Response beginActionWithParam(@PathParam("id")Long id,@PathParam("ident")String actionIdent,@PathParam("targetTile") Long targetTile) {
+		gs.unitBeginMove(id, actionIdent, targetTile);
+		return Response.status(200).build();
+	}
+	@POST
+	@Path("/unit/dead/{id}")
+	public Response removeDeadUnit(@PathParam("id")Long id) {
+		UnitDTO unit = gs.getUnit(id);
+		gs.removeDeadUnit(id);
+		cb.delete(unit);
+		return Response.status(200).build();
+	}
+	@POST
 	@Path("/unittype/insert")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response insertUnitType(UnitTypeDTO unitType){
@@ -441,5 +561,13 @@ public class App {
 	public Response getUnitType(@PathParam("id") String ident){
 		return Response.status(200).entity(gs.getUnitType(ident)).build();
 	}
+	@POST
+	@Path("/tileimprovement/insert/all")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response insertTileImprovements(Collection<TileImprovementDTO> imps){
+		// no-op so far
+		return Response.status(200).build();
+	}
+
  
 }
